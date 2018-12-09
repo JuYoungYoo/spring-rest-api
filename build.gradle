@@ -1,12 +1,19 @@
+// spring boot version
+// jdk 8
+// junit, mockito > spring-boot-starter-test 2.1.1
+
 buildscript {
 	ext {
 		springBootVersion = '2.1.1.RELEASE'
+		hibernateVersion = '5.2.11.Final'		// (+ LocalData)JPA안의 Hibernate version overriding
 	}
 	repositories {
 		mavenCentral()
+		maven { url 'http://repo.spring.io/plugins-release' }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE")  // (+ LocalData)
 	}
 }
 
@@ -17,18 +24,36 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.juyoung'
 version = '0.0.1-SNAPSHOT'
+description = "spring restAPI test"
 sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-web')
+
+	compile("org.springframework.boot:spring-boot-starter-data-rest")  // spring boot setting
+
+//	 compile("org.springframework.data:spring-data-rest-webmvc:3.1.3.RELEASE")
+//	compile("org.springframework.boot:spring-boot-starter-hateoas")
+
 	runtimeOnly('com.h2database:h2')
+	compile ('org.springframework.boot:spring-boot-starter-web:1.2.8.RELEASE')
+	compile ('org.springframework.boot:spring-boot-starter-thymeleaf')				 // thymeleaf
+	compile (group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5') // restTemplate
 	compileOnly('org.projectlombok:lombok')
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')	//mockito,junit
+
+	compile("org.springframework.boot:spring-boot-starter-hateoas")
+	testCompile("com.jayway.jsonpath:json-path")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
+
 }
+
+
+// yaml이용하여 테스트 데이터 저장 : https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/html/configuration-metadata.html#configuration-metadata-annotation-processor
+// restapi url :: https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/html/configuration-metadata.html#configuration-metadata-annotation-processor

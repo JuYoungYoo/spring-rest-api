@@ -1,0 +1,15 @@
+spring:
+  # DB h2 설정
+  h2:
+    console:
+      enabled: true
+  jpa:
+    properties :
+      hibernate.enable_lazy_load_no_trans : true # lazy load 설정 (getId)
+    show-sql: true
+
+  #MVC 설정
+#  mvc:
+#    view:
+#      prefix: /templates/
+#      suffix: .html
