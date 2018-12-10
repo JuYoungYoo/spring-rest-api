@@ -175,3 +175,5 @@ public class RestTemplateTest {
 // delete(), put() : return X
 // exchange(), execute() : 모든 함수 Http method 요청 사용가능
 // PATCH : 지원 X : HttpClient 라이브러리 HttpComponentsClientHttpRequestFactory 이용
+
+// 참고 : https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html

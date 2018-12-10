@@ -20,6 +20,7 @@ public class BoardController {
     // board dao
     private BoardsService service;
 
+    @CrossOrigin(origins = "http://localhost:8081")
     @GetMapping(value = "/api/boards")
     public List<Boards> list() {
         return service.list();
@@ -31,7 +32,7 @@ public class BoardController {
             Boards board = service.create(dto);
             long id = dto.getSeq();
             board.add(linkTo(methodOn(BoardController.class).list()).withRel("list"),
-                    linkTo(methodOn(BoardController.class).show(id)).withRel("read"));
+                    linkTo(methodOn(BoardController.class).show(board.getSeq())).withRel("read"));
             return new ResponseEntity<>(board, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
