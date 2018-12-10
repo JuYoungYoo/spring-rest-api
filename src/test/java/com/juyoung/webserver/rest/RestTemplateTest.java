@@ -1,4 +1,4 @@
-package com.juyoung.webserver;
+package com.juyoung.webserver.rest;
 
 import com.juyoung.webserver.domain.Boards;
 import org.jboss.logging.Logger;
@@ -24,7 +24,7 @@ public class RestTemplateTest {
 
     Logger logger = Logger.getLogger(this.getClass());
 
-    @LocalServerPort // EmbeddedWebApplicationContext load
+    @LocalServerPort    // EmbeddedWebApplicationContext load
     private int port;
     private URL apiURL;
 
@@ -32,86 +32,125 @@ public class RestTemplateTest {
     private TestRestTemplate restTemplate;
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         this.apiURL = new URL("http://localhost:" + port + "/api/boards");
     }
 
+    /**
+     * 게시판 리스트
+     * METHOD : GET
+     * URL : http://localhost:port/api/boards
+     * restTemplate : getForEntity
+     */
     @Test
-    public void  get_board_list() throws Exception{
-        // url : http://localhost:port/api/boards
-        ResponseEntity<List> response = restTemplate.getForEntity(apiURL.toString(), List.class);
-        Assert.assertEquals(response.getStatusCode(),HttpStatus.OK);
-        logger.info("::::::response: " +response.getBody());
+    public void get_board_list() throws Exception {
+        String url = apiURL.toString(); // http://localhost:port/api/boards
+        ResponseEntity<List> response = restTemplate.getForEntity(url, List.class);
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        logger.info("::::::response: " + response.getBody());
     }
 
+    /**
+     * 게시판 내용보기 by id
+     * METHOD : GET
+     * URL : http://localhost:port/api/boards/{id}
+     * restTemplate : getForEntity
+     */
     @Test
-    public void get_board_by_id() throws Exception{
-        // url : http://localhost:port/api/boards/1
+    public void get_board_by_id() throws Exception {
         long id = 1;
-        ResponseEntity<Boards> response = restTemplate.getForEntity(apiURL.toString() + "/" + id,Boards.class);
+        String url = apiURL.toString() + "/" + id; // http://localhost:port/api/boards/1
+        ResponseEntity<Boards> response = restTemplate.getForEntity(url, Boards.class);
         Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
         Assert.assertNotNull(response.getBody());
-        logger.info(":::::: response : " + response.getBody());
+        logger.info(":::::: response.getBody ::::: " + response.getBody());
     }
 
-    // exchange
+    /**
+     * 게시판 내용보기 by id
+     * METHOD : GET
+     * URL : http://localhost:port/api/boards/1
+     * RestTemplate : exchange
+     */
     @Test
-    public void get_board_by_id2() throws Exception{
+    public void get_board_by_id2() throws Exception {
         // url : http://localhost:port/api/boards/1
         // exchange : http header, return httpResponseEntity
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/boards/1");
-//                .queryParam("", orderNo);
+//      .queryParam("", orderNo);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
         Boards response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, Boards.class).getBody();
-        logger.info("response : " + response);
+        logger.info(":::::: response.board ::::: " + response.toString());
     }
 
+    /**
+     * 게시판 등록
+     * METHOD : POST
+     * URL : http://localhost:port/api/boards
+     * RestTemplate : postForEntity
+     */
     @Test
-    public void create_board(){
+    public void create_board() {
         //when
+        String url = apiURL.toString(); // http://localhost:port/api/boards
         Boards board = Boards.builder()
                 .title("add title")
                 .author("add userName")
                 .content("add content")
                 .build();
 
-        ResponseEntity<Boards> response = restTemplate.postForEntity(apiURL.toString(), board, Boards.class);
-        System.out.println("response : " + response);
+        ResponseEntity<Boards> response = restTemplate.postForEntity(url, board, Boards.class);
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        logger.info(":::::: response.getBody ::::: " + response.getBody());
     }
 
-    // delete, exchange, excute
-    // return, parameter value X
-    // > 필요시 exchange 사용
-    // 방법 [1] delete
+    /**
+     * 방법[1] 게시판 삭제
+     * METHOD : DELETE
+     * URL : http://localhost:port/api/boards/{id}
+     * RestTemplate : DELETE (DELETE, EXCHANGE, EXECUTE)
+     * - RETURN parameter value X ( 필요 시 exchange 사용 )
+     */
     @Test
-    public void delete_board(){
+    public void delete_board() {
         // http headers, http Entity use
         long id = 1;
         URI uri = URI.create(apiURL + "/" + id);
         restTemplate.delete(uri);
     }
-    // 방법 [2] return 필요시 exchange
+
+    /**
+     * 방법[2] 게시판 삭제
+     * METHOD : DELETE
+     * URL : http://localhost:port/api/boards/{id}
+     * RestTemplate : Exchange
+     * RETURN response
+     */
     @Test
-    public void delete2_board(){
+    public void delete2_board() {
         long id = 1;
         URI uri = URI.create(apiURL + "/" + id);
+
         HttpHeaders headers = new HttpHeaders();
         HttpEntity entity = new HttpEntity(headers);
-
-        ResponseEntity<Object> responseEntity = restTemplate.exchange(uri, HttpMethod.DELETE, entity, Object.class);
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        logger.info(responseEntity.getBody());
+        ResponseEntity<Object> response = restTemplate.exchange(uri, HttpMethod.DELETE, entity, Object.class);
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        logger.info(":::::: response.getBody ::::: " + response.getBody());
     }
 
-    // delete와 동일, 차이점 : +객체
-    // + httpEntity + header
+    /**
+     * 게시판 수정
+     * METHOD : PUT
+     * URL : http://localhost:port/api/boards/{id}
+     * RestTemplate : PUT ( DELETE와 동일 / 차이점 : +HttpEntity, header )
+     */
     @Test
-    public void put_board(){
+    public void put_board() {
         long id = 1;
         URI uri = URI.create(apiURL + "/" + id);
 
@@ -120,15 +159,13 @@ public class RestTemplateTest {
                 .title("update title")
                 .build();
 
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Boards> entity = new HttpEntity<>(board, headers);
 
-        ResponseEntity<Boards> responseEntity = restTemplate.exchange(uri, HttpMethod.PUT, entity, Boards.class);
-
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        logger.info("::::body : " +  responseEntity.getBody());
+        ResponseEntity<Boards> response = restTemplate.exchange(uri, HttpMethod.PUT, entity, Boards.class);
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        logger.info(":::::: response.getBody ::::: " + response.getBody());
     }
 
 }

@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //@Repository
 //@RepositoryRestResource(path ="boards")
 public interface BoardsRepository extends JpaRepository<Boards, Long>{
-
+    Boards findByAuthor(String author);
 }
