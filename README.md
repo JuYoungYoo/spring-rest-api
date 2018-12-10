@@ -11,7 +11,9 @@
  - Lombok
  - H2
  - Gradle 4.10.2
- 
+
+localhost:8080/api/boards
+
  [선택사항] Client server download : https://github.com/JuYoungYoo/client-server/tree/master
  
  Blog : https://blog.naver.com/juy5790/221415870363
