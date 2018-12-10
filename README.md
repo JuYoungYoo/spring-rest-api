@@ -14,6 +14,8 @@
 
 localhost:8080/api/boards
 
+resttemplate : rest/RestTemplateTest.java 소스 참고 
+
  [선택사항] Client server download : https://github.com/JuYoungYoo/client-server/tree/master
  
  Blog : https://blog.naver.com/juy5790/221415870363
